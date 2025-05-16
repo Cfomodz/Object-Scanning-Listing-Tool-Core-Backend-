@@ -1,9 +1,2 @@
-python-dotenv
-Pillow
-opencv-python
-pyzbar
-requests
-keyboard
-python-barcode
-pytest
-reportlab
+Flask==3.1.0
+Flask-SQLAlchemy==3.1.1

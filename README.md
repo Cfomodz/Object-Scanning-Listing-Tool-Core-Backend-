@@ -1,93 +1,54 @@
-<div align="center">
+# Docker Dev Env for Python Flask
 
-# Object Scanning & Listing Tool (Core Backend)
-![GitHub License](https://img.shields.io/github/license/Cfomodz/PCGS-slab-picture-to-listing-tool)
-![GitHub Sponsors](https://img.shields.io/github/sponsors/Cfomodz)
-![Discord](https://img.shields.io/discord/425182625032962049)
+# Running tests
 
-<img src="https://github.com/user-attachments/assets/26fa2e62-64ed-43de-b0df-4465947d512e" alt="Object Scan Tool" width="400"/>
+This command builds a docker image with the code of this repository and runs the repository's tests
 
-### ✨ From images to listings & labels, for any collectible ✨
-**Scan, identify, and list any item type with a modular, plugin-based backend**
-</div>
+```sh
+./build_docker.sh my_app
+docker run -t my_app ./run_tests.sh
+```
 
----
+```
+[+] Building 0.1s (10/10) FINISHED                                                            docker:default
+ => [internal] load build definition from Dockerfile                                                    0.0s
+ => => transferring dockerfile: 248B                                                                    0.0s
+ => [internal] load metadata for docker.io/library/python:3.13.2-alpine3.21@sha256:323a717dc4a010fee21  0.0s
+ => [internal] load .dockerignore                                                                       0.0s
+ => => transferring context: 94B                                                                        0.0s
+ => [1/5] FROM docker.io/library/python:3.13.2-alpine3.21@sha256:323a717dc4a010fee21e3f1aac738ee10bb48  0.0s
+ => [internal] load build context                                                                       0.0s
+ => => transferring context: 253B                                                                       0.0s
+ => CACHED [2/5] WORKDIR /app                                                                           0.0s
+ => CACHED [3/5] COPY requirements.txt .                                                                0.0s
+ => CACHED [4/5] RUN pip install --no-cache-dir -r requirements.txt                                     0.0s
+ => CACHED [5/5] COPY . .                                                                               0.0s
+ => exporting to image                                                                                  0.0s
+ => => exporting layers                                                                                 0.0s
+ => => writing image sha256:4e6c980fbf83b2131359af3d3730e61c89ae7dc85e23c151114b0d9d4a749158            0.0s
+ => => naming to docker.io/library/my_app                                                               0.0s
 
-## 🚀 Quick Start
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.069s
 
-1. **Install**
-   ```bash
-   git clone https://github.com/Cfomodz/Object-Scanning-Listing-Tool-Core-Backend-.git
-   cd Object-Scanning-Listing-Tool-Core-Backend
-   pip install -r requirements.txt
-   ```
+OK
+```
+# Running a specific test
 
-2. **Configure**
-   - Copy `.env.example` to `.env` and set any global environment variables.
-   - Each plugin may have its own `.env` for item-type-specific settings.
+This example runs a single test in the class TodoTestCase, with the name "test_home"
 
-3. **Run**
-   ```bash
-   python main.py <item_type> [args...]
-   # Example: python main.py coin --images ./images
-   ```
+```sh
+./build_docker.sh my_app
+docker run -t my_app ./run_tests.sh TodoTestCase.test_home
+```
 
----
+# Running a flask dev server
 
-## 🧩 Architecture Overview
+Run this command to enable hot reloading via docker.
 
-- **Core Backend**: Provides abstract base classes, barcode/image utilities, listing/box/order management, and a plugin registry.
-- **Plugin System**: Each item type (coins, cards, comics, etc.) is implemented as a plugin, with its own scanner, listing builder, and label writer.
-- **Stateless API**: Designed for integration with any frontend or automation pipeline.
-- **Extensible**: Add new item types by creating a new plugin directory and implementing the required interfaces.
-
----
-
-## 🔑 Key Features
-
-- 📦 Modular box/order management for any item type
-- 🖨️ Label generation and printing (PDF, QR/barcode, etc.)
-- 📷 Barcode and image-based identification utilities
-- 🧩 Plugin discovery and dynamic dispatch
-- 💾 Caching and persistence utilities
-- 🧪 Full test suite for core and plugins
-
----
-
-## ⚙️ Setup & Configuration
-
-- **Global settings**: Place in `.env` at the project root.
-- **Plugin settings**: Each plugin can have its own `.env` (see plugin's `.env.example`).
-- **Dependencies**: See `requirements.txt` for required Python packages.
-
----
-
-## 🛠️ Extending the System
-
-1. **Create a new plugin**:
-   - Add a directory under `plugins/` (e.g., `plugins/cards/`).
-   - Implement `ItemScanner`, `ListingBuilder`, and (optionally) `LabelWriter` subclasses.
-   - Register your plugin in its `__init__.py`.
-
-2. **Add tests**:
-   - Place plugin-specific tests in `plugins/<your_plugin>/tests/`.
-   - Core tests live in the `tests/` directory.
-
-3. **Integrate with the API or CLI**:
-   - The core system will discover and use your plugin automatically.
-
----
-
-## 📚 Example Workflow
-
-1. **Capture images** of your items (any type) using your preferred frontend or camera tool.
-2. **Send images to the backend** via API or CLI, specifying the item type.
-3. **Backend identifies, builds listings, and generates labels** using the appropriate plugin.
-4. **Export listings** as JSON, send to an external API, or print labels as needed.
-
----
-
-## 📜 License
-LGPL-2.1
-
-💌 Questions? Open an issue or join the Discord!
+```sh
+./build_docker.sh my_app
+docker run --network=host -v .:/app -t my_app flask init_db
+docker run --network=host -v .:/app -t my_app flask run
+```
