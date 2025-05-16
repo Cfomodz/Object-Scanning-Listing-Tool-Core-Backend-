@@ -1,8 +1,7 @@
 # main.py (refactored for plugin-based architecture)
-from core.environment_setup import load_core_env, PluginRegistry
-from core.barcode_scanner import BarcodeScanner
-from core.listing import Listing
-from core.image_utils import images_are_similar
+from .core.environment_setup import load_core_env, PluginRegistry
+from .core.barcode_scanner import BarcodeScanner, images_are_similar
+from .core.listing import Listing
 from flask import Flask, request, jsonify
 from PIL import Image
 import io
