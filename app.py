@@ -1,10 +1,7 @@
 # main.py (refactored for plugin-based architecture)
-from core.config import load_core_env
-from core.plugin import PluginRegistry
+from core.environment_setup import load_core_env, PluginRegistry
 from core.barcode_scanner import BarcodeScanner
 from core.listing import Listing
-from core.box import Box
-from core.order import Order
 from core.image_utils import images_are_similar
 from flask import Flask, request, jsonify
 from PIL import Image
@@ -60,35 +57,6 @@ def decision_barcode():
     # For demo: logic to decide keep/toss based on barcode
     # In real use, implement business logic here
     return jsonify({'result': 'Not implemented: need business logic for barcode decision'}), 501
-
-@app.route('/box/create', methods=['POST'])
-def box_create():
-    data = request.get_json()
-    barcodes = data.get('barcodes')
-    if not barcodes:
-        return jsonify({'error': 'No barcodes provided'}), 400
-    box = Box()
-    for bc in barcodes:
-        box.add_item({'barcode': bc})  # Replace with real item lookup if available
-    return jsonify(box.to_dict())
-
-@app.route('/order/create', methods=['POST'])
-def order_create():
-    data = request.get_json()
-    barcodes = data.get('barcodes')
-    target_value = data.get('target_value', 0)
-    if not barcodes:
-        return jsonify({'error': 'No barcodes provided'}), 400
-    order = Order(target_value=target_value)
-    box = Box()
-    for bc in barcodes:
-        box.add_item({'barcode': bc})  # Replace with real item lookup if available
-    order.add_box(box)
-    return jsonify({
-        'target_value': order.target_value,
-        'remaining_value': order.remaining_value,
-        'boxes': [b.to_dict() for b in order.boxes]
-    })
 
 def main():
     if 'flask' in sys.argv or os.environ.get('FLASK_APP'):

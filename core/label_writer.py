@@ -14,7 +14,7 @@ except ImportError:
 class LabelWriter(ABC):
     """
     Abstract base class for generating and printing labels for inventory objects (any type).
-    Provides static helpers for barcode and box/order label generation.
+    Provides static helpers for barcode generation.
     OS-agnostic: printing is a no-op or message on non-Windows systems.
     """
     @staticmethod
@@ -26,37 +26,6 @@ class LabelWriter(ABC):
         barcode_path = f"barcode_{barcode_data}"
         ean.save(barcode_path)
         return f"{barcode_path}.png"
-
-    @staticmethod
-    def create_box_label_content(box) -> str:
-        content = f"Box"
-        content += f"Total Value: ${getattr(box, 'total_value', lambda: 0)():.2f}\n"
-        content += "Items:\n"
-        for item in getattr(box, 'items', []):
-            # Try to get year, denomination, price_guide_value if present
-            year = getattr(item, 'year', '')
-            denom = getattr(item, 'denomination', '')
-            value = getattr(item, 'price_guide_value', 0)
-            content += f"{year} {denom} - ${value:.2f}\n"
-        return content
-
-    @staticmethod
-    def create_order_label(order) -> str:
-        label_content = f"Order Target Value: ${order.target_value:.2f}\n"
-        label_content += f"Remaining Value: ${order.remaining_value:.2f}\n"
-        label_content += "Boxes:\n"
-        for box in order.boxes:
-            label_content += f"Box ID: {getattr(box, 'box_id', '')} - Total Value: ${box.total_value():.2f}\n"
-        return label_content
-
-    @staticmethod
-    def create_order_label_content(order) -> str:
-        content = f"Order Target Value: ${order.target_value:.2f}\n"
-        content += f"Remaining Value: ${order.remaining_value:.2f}\n"
-        content += "Boxes:\n"
-        for box in order.boxes:
-            content += f"Total Value: ${box.total_value():.2f}\n"
-        return content
 
     @abstractmethod
     def create_label_content(self, item: Any) -> str:
