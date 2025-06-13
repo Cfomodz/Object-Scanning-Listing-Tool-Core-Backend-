@@ -1,7 +1,7 @@
 from typing import Any, Optional, List
 import os
 from PIL import Image
-from .barcode_scanner import images_are_similar
+from core.barcode_scanner import images_are_similar
 
 class Listing:
     """

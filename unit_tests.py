@@ -2,8 +2,8 @@ import unittest
 from unittest.mock import patch, MagicMock
 import os
 
-from .core.listing import Listing
-from .core.barcode_scanner import BarcodeScanner
+from core.listing import Listing
+from core.barcode_scanner import BarcodeScanner
 
 # --- Listing Tests ---
 class DummyCoin:
