@@ -1,3 +1,2 @@
 #!/bin/sh
-
-python3 unit_tests.py ${@}
+python -m unittest discover -s . -p "test_*.py" -v
