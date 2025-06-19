@@ -13,6 +13,15 @@ load_core_env()
 
 app = Flask(__name__)
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint for Docker and monitoring."""
+    return jsonify({
+        'status': 'healthy',
+        'service': 'object-scanning-tool',
+        'version': '1.0'
+    }), 200
+
 @app.route('/barcode/read', methods=['POST'])
 def barcode_read():
     if 'image' not in request.files:
@@ -58,8 +67,11 @@ def decision_barcode():
     return jsonify({'result': 'Not implemented: need business logic for barcode decision'}), 501
 
 def main():
-    if 'flask' in sys.argv or os.environ.get('FLASK_APP'):
-        app.run(debug=True, host='0.0.0.0', port=5000)
+    # Check if running in Docker or with Flask environment
+    if 'flask' in sys.argv or os.environ.get('FLASK_APP') or os.environ.get('FLASK_ENV'):
+        # Production configuration for Docker
+        debug_mode = os.environ.get('FLASK_ENV') == 'development'
+        app.run(debug=debug_mode, host='0.0.0.0', port=5000)
         return
     if len(sys.argv) < 2:
         print("Usage: python app.py <item_type> [args...]")
